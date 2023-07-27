@@ -1,7 +1,9 @@
 import React from "react";
 import Image from "next/image";
 import { Balancer } from "react-wrap-balancer";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
+import { Sparkle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function HeroSection() {
   return (
@@ -10,18 +12,33 @@ function HeroSection() {
       <div className="max-w-7xl px-6 2xl:px-0 mx-auto h-full flex flex-col justify-center">
         <div className="flex pt-32 sm:pt-24 lg:pt-0 flex-col px-6  text-center lg:text-left lg:px-0 lg:flex-row lg:items-start gap-10 ">
           <div className="">
+            <div className="bg-foreground/10 backdrop-blur-lg opacity-90 text-xs py-2 px-4 rounded-full flex gap-1 hover:-translate-y-1 duration-700 cursor-pointer w-fit mb-6">
+              <p className="">
+                A Trusted Tool Delighting 150,000+ Users Worldwide
+              </p>
+              <Sparkle className="w-4 h-4" />
+            </div>
             <h1 className="animate-fade-up bg-gradient-to-br from-foreground to-stone-500 bg-clip-text text-4xl font-bold tracking-[-0.02em] text-transparent  drop-shadow-sm sm:text-5xl xl:text-7xl md:leading-[5rem]">
               <Balancer>Upscale Your Images with Our Enhancement</Balancer>
             </h1>
             <p className="lg:max-w-xl text-muted-foreground my-10">
               Are your photos not looking as stunning as you want them to be?
-              {"Don't"} worry; {"we've"} got you covered! Our Image Quality
+              {" Don't"} worry; {"we've"} got you covered! Our Image Quality
               Improvement website is here to transform your ordinary images into
-              extraordinary masterpieces
+              extraordinary masterpieces.
             </p>
             <div className="flex items-center justify-center lg:justify-start gap-5">
-              <Button>Enhance Now</Button>
-              <Button variant={"outline"}>Contact Me</Button>
+              <a href="" className={cn(buttonVariants())}>
+                Enhance Now
+              </a>
+              <a
+                href="https://twitter.com/mofr_dev"
+                target="_blank"
+                className={cn(buttonVariants({ variant: "outline" }))}
+              >
+                Contact Me
+              </a>
+              {/* <Button variant={"outline"}>Contact Me</Button> */}
             </div>
           </div>
           <div className="flex justify-center gap-6 lg:gap-0 mt-6 lg:mt-0 lg:flex-row-reverse  items-center xl:pb-32">

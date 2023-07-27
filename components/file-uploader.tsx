@@ -5,7 +5,6 @@ import { Button } from "./ui/button";
 import { FileRejection, FileWithPath, useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 import { formatBytes } from "@/lib/utils";
-import { useSession } from "next-auth/react";
 
 type FileWithPreview = FileWithPath & {
   preview: string;
@@ -33,13 +32,8 @@ function FileUploader({
   ...props
 }: FileUploadProps) {
   //   const [files, setFiles] = useState<FileWithPreview[] | null>(null);
-  const { data: session } = useSession();
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[], rejectedFiles: FileRejection[]) => {
-      if (!session) {
-        toast.error("You must sign in to upload your image");
-        return;
-      }
       setFiles(
         acceptedFiles.map((file) =>
           Object.assign(file, {
