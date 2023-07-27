@@ -1,5 +1,4 @@
 import React from "react";
-import GlobeVisitors from "./globe-visitors";
 import Image from "next/image";
 import { Balancer } from "react-wrap-balancer";
 import { Button } from "./ui/button";
@@ -47,7 +46,6 @@ function HeroSection() {
               />
             </div>
           </div>
-          {/* <GlobeVisitors /> */}
         </div>
       </div>
     </section>
