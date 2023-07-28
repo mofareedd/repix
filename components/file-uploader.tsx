@@ -66,6 +66,7 @@ function FileUploader({
 
   return (
     <div {...getRootProps()} className="rounded-md w-fit mx-auto mt-10">
+      <input {...getInputProps()} />
       <Button disabled={isUploading} className="w-60 flex items-center gap-1">
         Upload Your Image <Upload className="w-4 h-4 mt-[2px]" />
       </Button>

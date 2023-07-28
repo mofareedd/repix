@@ -1,6 +1,13 @@
 "use client";
-import { useState, useTransition } from "react";
-import { Download, Rocket, Sparkle, Upload } from "lucide-react";
+import { useId, useState, useTransition } from "react";
+import {
+  Download,
+  Ghost,
+  Rocket,
+  Sparkle,
+  Upload,
+  XCircle,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { Skeleton } from "./ui/skeleton";
 import { FileWithPath } from "react-dropzone";
@@ -13,11 +20,18 @@ import { cn, isArrayOfFile } from "@/lib/utils";
 import { saveAs } from "file-saver";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import CompareSlider from "./compare-slider";
+import { checkRemaining } from "@/app/_actions";
 
 type FileWithPreview = FileWithPath & {
   preview: string;
 };
 
+interface StoredImage {
+  id: string;
+  name: string;
+  url: string;
+}
 const options = {
   accept: {
     "image/*": [],
@@ -27,12 +41,17 @@ const options = {
 };
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
-function UploadImage() {
+function UploadImage({
+  totalEnhancements,
+}: {
+  totalEnhancements: number | null;
+}) {
   const { data: session } = useSession();
   const [file, setFile] = useState<FileWithPreview[] | null>(null);
   const { isUploading, startUpload } = useUploadThing("imageUploader");
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState("");
+  const [enhancedImage, setEnhancedImage] = useState("");
+  const downloadImageName = useId();
 
   async function uploadHandler() {
     if (!session) {
@@ -41,6 +60,7 @@ function UploadImage() {
     }
     setIsLoading(true);
     try {
+      await checkRemaining(session.user.id);
       const images = isArrayOfFile(file)
         ? await startUpload(file).then((res) => {
             const formattedImages = res?.map((image) => ({
@@ -51,11 +71,27 @@ function UploadImage() {
             return formattedImages ?? null;
           })
         : null;
-      toast.success("Image Enhanced Successfully!");
       if (images && images?.length > 0) {
-        setResult(images[0].url);
+        const response = await fetch("/api/enhance", {
+          method: "POST",
+          body: JSON.stringify({
+            id: images[0].id,
+            name: images[0].name,
+            url: images[0].url,
+          }),
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          toast.error("Failed to enhance image");
+          return;
+        }
+
+        toast.success("Image Enhanced Successfully!");
+        setEnhancedImage(data.result);
       }
     } catch (error) {
+      console.log(error);
       error instanceof Error
         ? toast.error(error.message)
         : toast.error("Something went wrong.");
@@ -79,38 +115,53 @@ function UploadImage() {
       />
       <div className="max-w-7xl mx-auto">
         <div className="bg-foreground/10 backdrop-blur-lg opacity-90 text-xs py-2 px-4 rounded-full flex items-center gap-1 hover:-translate-y-1 duration-700 cursor-pointer w-fit mx-auto mb-6">
-          <p className="">8047 images restored and counting</p>
+          <p className="">
+            {totalEnhancements || ""} images restored and counting
+          </p>
           <Sparkle className="w-4 h-4" />
         </div>
         <h1 className="text-4xl md:text-6xl text-center">Upload Image</h1>
         <p className="text-muted-foreground text-sm md:text-[16px] text-center mt-6">
           You have 5 images everyday to enhance
         </p>
-        <div
-          className={cn(
-            "max-w-sm  mt-10  mx-auto transition-height duration-700 relative",
-            isLoading || result || (file && file?.length > 0) ? "h-80" : "h-0"
-          )}
-        >
-          {result ? (
-            <Image src={result} alt="result" fill className="object-contain" />
-          ) : file && file.length > 0 ? (
-            <Image
-              src={file[0].preview}
-              alt="result"
-              fill
-              className="object-contain"
-            />
-          ) : (
-            <Skeleton className="w-full h-full" />
-          )}
-        </div>
+        <div className="my-10">
+          {enhancedImage && file ? (
+            <div className="flex items-center justify-center h-[475px] w-full">
+              <CompareSlider before={file[0].preview} after={enhancedImage} />
+            </div>
+          ) : null}
+          {!enhancedImage && file && file.length > 0 ? (
+            <div className="flex items-center justify-center ">
+              <div
+                className={cn(
+                  "transition-height w-[475px] duration-700 relative"
+                )}
+              >
+                {/* <Skeleton className="w-full h-full" /> */}
 
-        {file && file?.length > 0 && !result ? (
+                <Button
+                  variant={"link"}
+                  className="absolute z-10 -right-2 -top-8"
+                  onClick={() => setFile(null)}
+                >
+                  <XCircle />
+                </Button>
+                <Image
+                  src={file[0].preview}
+                  width={475}
+                  height={475}
+                  alt=""
+                  className="relative rounded-md"
+                />
+              </div>
+            </div>
+          ) : null}
+        </div>
+        {file && file?.length > 0 && !enhancedImage ? (
           <div className="flex items-center justify-center mt-10">
             <Button
               onClick={uploadHandler}
-              disabled={isUploading || isLoading || result.length > 0}
+              disabled={isUploading || isLoading}
               //   className="w-60 flex gap-1 bg-blue-500 text-white"
               className="w-60 flex gap-1 text-blue-100 transition-colors duration-300 ease-in-out bg-blue-500 shadow-xl hover:bg-blue-600 shadow-blue-400/30"
             >
@@ -124,7 +175,7 @@ function UploadImage() {
             </Button>
           </div>
         ) : null}
-        {!file && !result ? (
+        {!file ? (
           <FileUploader
             files={file}
             setFiles={setFile}
@@ -133,9 +184,11 @@ function UploadImage() {
         ) : null}
 
         <div className="flex items-center justify-center mt-10">
-          {result ? (
+          {enhancedImage ? (
             <Button
-              onClick={() => saveAs(result, "repix.jpg")}
+              onClick={() =>
+                saveAs(enhancedImage, `repix-${downloadImageName}.jpg`)
+              }
               className="w-60 flex gap-1 text-green-100 transition-colors duration-300 ease-in-out bg-green-500 shadow-xl hover:bg-green-600 shadow-green-400/30"
             >
               Download Image <Download className="w-4 h-4" />

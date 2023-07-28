@@ -2,9 +2,9 @@ import Navbar from "@/components/navbar";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/providers/next-theme-provider";
-import { Toaster } from "@/providers/toaster-provider";
-import AuthContext from "@/providers/auth-provider";
+import { ThemeProvider } from "@/components/providers/next-theme-provider";
+import { Toaster } from "@/components/providers/toaster-provider";
+import AuthContext from "@/components/providers/auth-provider";
 import { getSession } from "@/lib/session";
 
 const inter = Inter({ subsets: ["latin"] });

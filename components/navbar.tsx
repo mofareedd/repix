@@ -14,7 +14,7 @@ interface NavbarProps {
 function Navbar({ session }: NavbarProps) {
   return (
     <nav className="py-3 absolute w-full z-30">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="max-w-7xl px-6 xl:px-0 mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Icons.logo className="w-8 h-8 fill-foreground" />
           <h5 className="text-lg">rePix</h5>
