@@ -113,7 +113,7 @@ function UploadImage({
             "conic-gradient(from 90deg at 50% 50%, #00000000 50%, #000 50%),radial-gradient(rgba(200, 200, 200, 0.1) 0%, transparent 80%)",
         }}
       />
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-6 sm:px-0">
         <div className="bg-foreground/10 backdrop-blur-lg opacity-90 text-xs py-2 px-4 rounded-full flex items-center gap-1 hover:-translate-y-1 duration-700 cursor-pointer w-fit mx-auto mb-6">
           <p className="">
             {totalEnhancements || ""} images restored and counting
@@ -183,8 +183,8 @@ function UploadImage({
           />
         ) : null}
 
-        <div className="flex items-center justify-center mt-10">
-          {enhancedImage ? (
+        {enhancedImage ? (
+          <div className="flex items-center justify-center mt-10">
             <Button
               onClick={() =>
                 saveAs(enhancedImage, `repix-${downloadImageName}.jpg`)
@@ -193,8 +193,8 @@ function UploadImage({
             >
               Download Image <Download className="w-4 h-4" />
             </Button>
-          ) : null}
-        </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
