@@ -27,7 +27,10 @@ function HeroSection({ trustedUsers }: { trustedUsers: number | null }) {
               extraordinary masterpieces.
             </p>
             <div className="flex items-center justify-center lg:justify-start gap-5">
-              <a href="" className={cn(buttonVariants())}>
+              <a
+                href="#upload"
+                className={cn(buttonVariants(), "cursor-pointer")}
+              >
                 Enhance Now
               </a>
               <a

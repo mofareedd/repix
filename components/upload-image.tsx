@@ -124,7 +124,7 @@ function UploadImage({
         <p className="text-muted-foreground text-sm md:text-[16px] text-center mt-6">
           You have 5 images everyday to enhance
         </p>
-        <div className="my-10">
+        <div id="upload" className="my-10">
           {enhancedImage && file ? (
             <div className="flex items-center justify-center h-[475px] w-full">
               <CompareSlider before={file[0].preview} after={enhancedImage} />
